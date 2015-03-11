@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="El-quijote-spark : Introduction to Spark using &quot;El Quijote&quot;">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>El-quijote-spark</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/gclaramunt/el-quijote-spark">View on GitHub</a>
+
+          <h1 id="project_title">El-quijote-spark</h1>
+          <h2 id="project_tagline">Introduction to Spark using &quot;El Quijote&quot;</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gclaramunt/el-quijote-spark/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gclaramunt/el-quijote-spark/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="el-quijote-spark" class="anchor" href="#el-quijote-spark" aria-hidden="true"><span class="octicon octicon-link"></span></a>el-quijote-spark</h1>
+
+<h2>
+<a id="introduction-to-spark-using-el-quijote" class="anchor" href="#introduction-to-spark-using-el-quijote" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction to Spark using "El Quijote"</h2>
+
+<p>(not really big data, but shocases the usefulness of a REPL )</p>
+
+<h3>
+<a id="carga-el-archivo--loads-the-file" class="anchor" href="#carga-el-archivo--loads-the-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Carga el archivo / loads the file</h3>
+
+<pre><code>val texto=sc.textFile("el-quijote.txt")
+</code></pre>
+
+<h4>
+<a id="cantidad-de-lineas--line-count" class="anchor" href="#cantidad-de-lineas--line-count" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cantidad de lineas / line count</h4>
+
+<pre><code>texto.count
+</code></pre>
+
+<h3>
+<a id="primera-linea--first-line" class="anchor" href="#primera-linea--first-line" aria-hidden="true"><span class="octicon octicon-link"></span></a>Primera linea / first line</h3>
+
+<pre><code>texto.first
+</code></pre>
+
+<h3>
+<a id="cantidad-de-lineas-con-quijote--count-of-lines-containing-quijote" class="anchor" href="#cantidad-de-lineas-con-quijote--count-of-lines-containing-quijote" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cantidad de lineas con "Quijote" / count of lines containing "Quijote"</h3>
+
+<pre><code>texto.filter(line =&gt; line.contains("Quijote")).count
+</code></pre>
+
+<h3>
+<a id="cuantas-palabras-tiene-la-linea-con-mas-palabras--how-many-words-has-the-line-with-most-words" class="anchor" href="#cuantas-palabras-tiene-la-linea-con-mas-palabras--how-many-words-has-the-line-with-most-words" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cuantas palabras tiene la linea con mas palabras / how many words has the line with most words</h3>
+
+<pre><code>texto.map(line =&gt; line.split(" ").size).reduce((a, b) =&gt; if (a &gt; b) a else b)
+</code></pre>
+
+<h3>
+<a id="la-linea-con-mas-palabaras--get-the-line-with-most-words" class="anchor" href="#la-linea-con-mas-palabaras--get-the-line-with-most-words" aria-hidden="true"><span class="octicon octicon-link"></span></a>La linea con mas palabaras / get the line with most words</h3>
+
+<pre><code>texto.map(line =&gt; (line,line.split(" ").size)).reduce((a, b) =&gt; if (a._2 &gt; b._2) a else b)._1
+</code></pre>
+
+<h3>
+<a id="el-hello-world-de-big-data-conteo-de-palabras--big-datas-hello-world-word-count" class="anchor" href="#el-hello-world-de-big-data-conteo-de-palabras--big-datas-hello-world-word-count" aria-hidden="true"><span class="octicon octicon-link"></span></a>El hello world de big data: conteo de palabras / big data's "hello world": word count</h3>
+
+<pre><code>val wordCounts = texto.flatMap(line =&gt; line.split(" ")).map(word =&gt; (word, 1)).reduceByKey(_+_)
+</code></pre>
+
+<h3>
+<a id="array-con-las-primeras-100-entradas--array-with-the-first-100-entries" class="anchor" href="#array-con-las-primeras-100-entradas--array-with-the-first-100-entries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Array con las primeras 100 entradas / array with the first 100 entries</h3>
+
+<pre><code>wordCounts.take(100)
+</code></pre>
+
+<h3>
+<a id="como-no-es-grande-puedo-forzar-toda-la-coleccion-a-una-lista--because-is-not-big-i-can-force-the-whole-collection-to-a-list" class="anchor" href="#como-no-es-grande-puedo-forzar-toda-la-coleccion-a-una-lista--because-is-not-big-i-can-force-the-whole-collection-to-a-list" aria-hidden="true"><span class="octicon octicon-link"></span></a>Como no es grande, puedo forzar toda la coleccion a una lista / because is not big, I can force the whole collection to a list</h3>
+
+<pre><code>wordCounts.collect
+</code></pre>
+
+<h4>
+<a id="la-palabra-mas-usada--the-most-used-word" class="anchor" href="#la-palabra-mas-usada--the-most-used-word" aria-hidden="true"><span class="octicon octicon-link"></span></a>La palabra mas usada / the most used word</h4>
+
+<pre><code>wordCounts.reduce((a, b) =&gt; if (a._2 &gt; b._2) a else b)
+</code></pre>
+
+<h3>
+<a id="top-10" class="anchor" href="#top-10" aria-hidden="true"><span class="octicon octicon-link"></span></a>Top 10</h3>
+
+<pre><code>wordCounts.keyBy(_._2).sortByKey(ascending=false).take(10)
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">El-quijote-spark maintained by <a href="https://github.com/gclaramunt">gclaramunt</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-1731182-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
